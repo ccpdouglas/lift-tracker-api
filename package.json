@@ -1,0 +1,9 @@
+{
+  "name": "lift-tracker-api",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/ccpdouglas/lift-tracker-api.git",
+  "author": "Callum Douglas <callumcpdouglas@gmail.com>",
+  "license": "MIT",
+  "private": false
+}
