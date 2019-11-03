@@ -1,0 +1,10 @@
+{
+    "compilerOptions": {
+        "allowSyntheticDefaultImports": true,
+        "module": "es6",
+        "outDir": "dist",
+        "target": "es3",
+        "sourceMap": true
+    },
+    "exclude": ["node_modules"]
+}
