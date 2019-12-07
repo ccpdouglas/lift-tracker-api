@@ -1,12 +1,21 @@
 import { Router } from "express"
 import setRouter from "./set"
 import reportRouter from "./report"
+import Exercise from "../../models/Exercise"
 
 const exerciseRouter = Router()
 
-exerciseRouter.get("/")
+exerciseRouter.get("/", async (req, res, next) => {
+    const results = await Exercise.find({}).exec()
+    res.json(results)
+})
 
-exerciseRouter.post("/")
+exerciseRouter.post("/", async (req, res, next) => {
+    const { body } = req
+    const newExercise = new Exercise(body)
+    const document = await newExercise.save()
+    res.json(document)
+})
 
 exerciseRouter.get("/:id")
 
