@@ -3,8 +3,9 @@
         "allowSyntheticDefaultImports": true,
         "module": "commonjs",
         "outDir": "dist",
-        "target": "es3",
-        "sourceMap": true
+        "target": "es6",
+        "sourceMap": true,
+        "esModuleInterop": true
     },
     "exclude": ["node_modules"]
 }
