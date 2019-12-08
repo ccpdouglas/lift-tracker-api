@@ -32,7 +32,7 @@ exerciseRouter.delete("/:id", async (req, res, next) => {
     return res.status(200)
 })
 
-exerciseRouter.use("/:id/set", setRouter)
+exerciseRouter.use("/:id/sets", setRouter)
 
 exerciseRouter.use("/:id/report", reportRouter)
 
