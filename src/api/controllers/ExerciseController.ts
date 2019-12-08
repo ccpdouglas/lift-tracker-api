@@ -1,5 +1,5 @@
 import { Model } from "mongoose"
-import { IExerciseController, IExercise } from "../../types"
+import { IExerciseController, IExercise, IExerciseValues } from "../../types"
 
 export default class ExerciseController implements IExerciseController {
     constructor(private _ExerciseModel: Model<IExercise, {}>) {}
@@ -9,8 +9,8 @@ export default class ExerciseController implements IExerciseController {
         return documents
     }
 
-    public async create(name: string): Promise<IExercise> {
-        const newExercise = new this._ExerciseModel({ name })
+    public async create(exercise: IExerciseValues): Promise<IExercise> {
+        const newExercise = new this._ExerciseModel(exercise)
         const document = await newExercise.save()
         return document
     }
@@ -24,10 +24,12 @@ export default class ExerciseController implements IExerciseController {
         return document.toJSON()
     }
 
-    public async update(id: string, name: string): Promise<IExercise> {
+    public async update(id: string, { name, sets, tags }: IExerciseValues): Promise<IExercise> {
         const document = await this._ExerciseModel.findById(id, { name }).exec()
         document.name = name
-        const updatedDocument = await document.save()
-        return updatedDocument
+        document.sets = sets
+        document.tags = tags
+        await document.save()
+        return document
     }
 }

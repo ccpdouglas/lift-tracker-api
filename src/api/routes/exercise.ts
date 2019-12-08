@@ -13,7 +13,7 @@ exerciseRouter.get("/", async (req, res, next) => {
 })
 
 exerciseRouter.post("/", async (req, res, next) => {
-    const document = await exerciseController.create(req.body.name)
+    const document = await exerciseController.create(req.body)
     return res.json(document)
 })
 
@@ -23,7 +23,7 @@ exerciseRouter.get("/:id", async (req, res, next) => {
 })
 
 exerciseRouter.patch("/:id", async (req, res, next) => {
-    const document = await exerciseController.update(req.params.id, req.body.name)
+    const document = await exerciseController.update(req.params.id, req.body)
     return res.json(document)
 })
 
@@ -32,8 +32,8 @@ exerciseRouter.delete("/:id", async (req, res, next) => {
     return res.status(200)
 })
 
-exerciseRouter.use("/set", setRouter)
+exerciseRouter.use("/:id/set", setRouter)
 
-exerciseRouter.use("/report", reportRouter)
+exerciseRouter.use("/:id/report", reportRouter)
 
 export default exerciseRouter
