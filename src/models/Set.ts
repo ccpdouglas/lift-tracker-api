@@ -1,4 +1,5 @@
 import { Schema, model } from "mongoose"
+import { ISet } from "../types"
 
 const setSchema = new Schema({
     weight: Number,
@@ -6,4 +7,4 @@ const setSchema = new Schema({
     comments: String
 })
 
-export default model("Set", setSchema)
+export default model<ISet>("Set", setSchema)
