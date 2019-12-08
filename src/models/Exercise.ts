@@ -1,4 +1,5 @@
 import { Schema, model } from "mongoose"
+import { IExercise } from "../types"
 
 const exerciseSchema = new Schema({
     name: String,
@@ -6,4 +7,4 @@ const exerciseSchema = new Schema({
     tags: [String]
 })
 
-export default model("Exercise", exerciseSchema)
+export default model<IExercise>("Exercise", exerciseSchema)
