@@ -8,8 +8,8 @@ const exerciseRouter = Router()
 const exerciseController = new ExerciseController(Exercise)
 
 exerciseRouter.get("/", async (req, res, next) => {
-    const results = await Exercise.find({}).exec()
-    return res.json(results)
+    const documents = await exerciseController.getAll()
+    return res.json(documents)
 })
 
 exerciseRouter.post("/", async (req, res, next) => {

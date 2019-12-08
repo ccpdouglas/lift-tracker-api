@@ -7,6 +7,7 @@ export interface IExercise extends Document {
 }
 
 export interface IExerciseController {
+    getAll(): Promise<IExercise[]>
     get(id: string): Promise<IExercise>
     create(name: string): Promise<IExercise>
     delete(id: string): Promise<void>

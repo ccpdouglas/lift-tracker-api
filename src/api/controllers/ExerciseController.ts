@@ -4,6 +4,11 @@ import { IExerciseController, IExercise } from "../../types"
 export default class ExerciseController implements IExerciseController {
     constructor(private _ExerciseModel: Model<IExercise, {}>) {}
 
+    public async getAll(): Promise<IExercise[]> {
+        const documents = await this._ExerciseModel.find({}).exec()
+        return documents
+    }
+
     public async create(name: string): Promise<IExercise> {
         const newExercise = new this._ExerciseModel({ name })
         const document = await newExercise.save()
