@@ -1,6 +1,6 @@
-import { body } from "express-validator"
+import { body, ValidationChain } from "express-validator"
 
-export const exerciseRules = () => {
+export const exerciseRules = (): ValidationChain[] => {
     return [
         body("name")
             .notEmpty()
