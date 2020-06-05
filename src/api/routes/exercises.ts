@@ -20,8 +20,12 @@ exerciseRouter.post("/", exerciseRules(), validate, async (req: Request, res: Re
 })
 
 exerciseRouter.get("/:id", async (req: Request, res: Response) => {
-    const document = await exerciseController.get(req.params.id)
-    return res.json(document)
+    try {
+        const document = await exerciseController.get(req.params.id)
+        return res.json(document)
+    } catch (error) {
+        return res.status(404).json({ errors: [{ error: "document not found" }] })
+    }
 })
 
 exerciseRouter.patch("/:id", exerciseRules(), validate, async (req: Request, res: Response) => {
