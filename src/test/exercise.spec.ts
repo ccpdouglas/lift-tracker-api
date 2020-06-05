@@ -118,14 +118,28 @@ describe("exercise", () => {
             expect({ name, tags, sets }).to.deep.equal(expectedResponse)
             expect(_id).to.be.a("string")
         })
-
-        it("should return the created exercise", () => {})
     })
 
     describe("GET /exercises/:id", () => {
-        it("should get one exercise", async () => {})
+        it("should create and get one exercise", async () => {
+            const exerciseBody = { name: "exercise", tags: ["test"] }
+            const expected = { name: "exercise", tags: ["test"], sets: [] }
+            const { _id: exerciseId } = (await chai
+                .request(server)
+                .post("/exercises")
+                .send(exerciseBody)).body
+            const response = await chai.request(server).get(`/exercises/${exerciseId}`)
+            const { name, tags, sets, _id } = response.body
 
-        it("should return 404 when exercise does not exist", async () => {})
+            expect(response.status).to.equal(200)
+            expect({ name, tags, sets }).to.deep.equal(expected)
+            expect(_id).to.be.a("string")
+        })
+
+        it("should return 404 when exercise does not exist", async () => {
+            const response = await chai.request(server).get(`/exercises/1`)
+            expect(response.status).to.equal(404)
+        })
     })
 
     describe("PATCH /exercises/:id", () => {
