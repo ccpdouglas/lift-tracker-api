@@ -143,9 +143,82 @@ describe("exercise", () => {
     })
 
     describe("PATCH /exercises/:id", () => {
-        it("should return 422 when name is missing", () => {})
+        it("should return 422 when name is missing", async () => {
+            const exercise = { tags: ["test", "test two"] }
+            const expectedError = { errors: [{ location: "body", msg: "provide a value for name", param: "name" }] }
+            const { _id: exerciseId } = (await chai
+                .request(server)
+                .post("/exercises")
+                .send({ name: "test", tags: ["test"] })).body
+            const response = await chai
+                .request(server)
+                .patch(`/exercises/${exerciseId}`)
+                .send(exercise)
+            expect(response.status).to.equal(422)
+            expect(response.body).to.deep.equal(expectedError)
+        })
 
-        it("should return 404 when exercise does not exist", async () => {})
+        it("should return 422 when name is not a string", async () => {
+            const exercise = { name: 1, tags: ["test"] }
+            const expectedError = {
+                errors: [{ location: "body", msg: "provide a name that is a string", param: "name", value: 1 }]
+            }
+            const { _id: exerciseId } = (await chai
+                .request(server)
+                .post("/exercises")
+                .send({ name: "test", tags: ["test"] })).body
+            const response = await chai
+                .request(server)
+                .patch(`/exercises/${exerciseId}`)
+                .send(exercise)
+
+            expect(response.status).to.equal(422)
+            expect(response.body).to.deep.equal(expectedError)
+        })
+
+        it("should return 422 when tags are not provided", async () => {
+            const exercise = { name: "exercise" }
+            const expectedError = { errors: [{ location: "body", msg: "provide a value for tags", param: "tags" }] }
+            const { _id: exerciseId } = (await chai
+                .request(server)
+                .post("/exercises")
+                .send({ name: "test", tags: ["test"] })).body
+            const response = await chai
+                .request(server)
+                .patch(`/exercises/${exerciseId}`)
+                .send(exercise)
+
+            expect(response.status).to.equal(422)
+            expect(response.body).to.deep.equal(expectedError)
+        })
+
+        it("should return 422 when tags are not an array of strings", async () => {
+            const exercise = { name: "exercise", tags: [1, 2, 3] }
+            const expectedError = {
+                errors: [
+                    { location: "body", msg: "provide an array of strings for tags", param: "tags", value: [1, 2, 3] }
+                ]
+            }
+            const { _id: exerciseId } = (await chai
+                .request(server)
+                .post("/exercises")
+                .send({ name: "test", tags: ["test"] })).body
+            const response = await chai
+                .request(server)
+                .patch(`/exercises/${exerciseId}`)
+                .send(exercise)
+
+            expect(response.status).to.equal(422)
+            expect(response.body).to.deep.equal(expectedError)
+        })
+
+        it("should return 404 when exercise does not exist", async () => {
+            const response = await chai
+                .request(server)
+                .patch(`/exercise/1`)
+                .send({ name: "test", tags: ["test"] })
+            expect(response.status).to.equal(404)
+        })
 
         it("should update an exercise", () => {})
 
