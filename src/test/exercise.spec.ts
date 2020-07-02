@@ -1,7 +1,7 @@
 import chai from "chai"
 import chaiHttp from "chai-http"
 import server from "../app"
-import { connect, clearDatabase, closeDatabase } from "./mockgoose"
+import { connect, clearDatabase, closeDatabase, createExercise } from "./mockgoose"
 
 const expect = chai.expect
 
@@ -15,20 +15,13 @@ after(async () => await closeDatabase())
 
 describe("exercise", () => {
     describe("GET /exercises", () => {
-        it("should create two exercies and get all exercises", async () => {
+        it("should get all exercises", async () => {
             const exerciseBody = { name: "test exercise", tags: ["test"] }
             const exerciseBody2 = { name: "test exercise two", tags: ["test"] }
             const expectedResponse = [{ ...exerciseBody, sets: [] }, { ...exerciseBody2, sets: [] }]
 
-            await chai
-                .request(server)
-                .post("/exercises")
-                .send(exerciseBody)
-
-            await chai
-                .request(server)
-                .post("/exercises")
-                .send(exerciseBody2)
+            await createExercise(exerciseBody)
+            await createExercise(exerciseBody2)
 
             const response = await chai.request(server).get("/exercises")
 
@@ -121,14 +114,11 @@ describe("exercise", () => {
     })
 
     describe("GET /exercises/:id", () => {
-        it("should create and get one exercise", async () => {
+        it("should get one exercise", async () => {
             const exerciseBody = { name: "exercise", tags: ["test"] }
             const expected = { name: "exercise", tags: ["test"], sets: [] }
-            const { _id: exerciseId } = (await chai
-                .request(server)
-                .post("/exercises")
-                .send(exerciseBody)).body
-            const response = await chai.request(server).get(`/exercises/${exerciseId}`)
+            const exercise = await createExercise(exerciseBody)
+            const response = await chai.request(server).get(`/exercises/${exercise._id}`)
             const { name, tags, sets, _id } = response.body
 
             expect(response.status).to.equal(200)
@@ -146,13 +136,9 @@ describe("exercise", () => {
         it("should return 422 when name is missing", async () => {
             const exercise = { tags: ["test", "test two"] }
             const expectedError = { errors: [{ location: "body", msg: "provide a value for name", param: "name" }] }
-            const { _id: exerciseId } = (await chai
-                .request(server)
-                .post("/exercises")
-                .send({ name: "test", tags: ["test"] })).body
             const response = await chai
                 .request(server)
-                .patch(`/exercises/${exerciseId}`)
+                .patch(`/exercises/1`)
                 .send(exercise)
             expect(response.status).to.equal(422)
             expect(response.body).to.deep.equal(expectedError)
@@ -163,13 +149,9 @@ describe("exercise", () => {
             const expectedError = {
                 errors: [{ location: "body", msg: "provide a name that is a string", param: "name", value: 1 }]
             }
-            const { _id: exerciseId } = (await chai
-                .request(server)
-                .post("/exercises")
-                .send({ name: "test", tags: ["test"] })).body
             const response = await chai
                 .request(server)
-                .patch(`/exercises/${exerciseId}`)
+                .patch(`/exercises/1`)
                 .send(exercise)
 
             expect(response.status).to.equal(422)
@@ -179,13 +161,9 @@ describe("exercise", () => {
         it("should return 422 when tags are not provided", async () => {
             const exercise = { name: "exercise" }
             const expectedError = { errors: [{ location: "body", msg: "provide a value for tags", param: "tags" }] }
-            const { _id: exerciseId } = (await chai
-                .request(server)
-                .post("/exercises")
-                .send({ name: "test", tags: ["test"] })).body
             const response = await chai
                 .request(server)
-                .patch(`/exercises/${exerciseId}`)
+                .patch(`/exercises/1`)
                 .send(exercise)
 
             expect(response.status).to.equal(422)
@@ -199,13 +177,9 @@ describe("exercise", () => {
                     { location: "body", msg: "provide an array of strings for tags", param: "tags", value: [1, 2, 3] }
                 ]
             }
-            const { _id: exerciseId } = (await chai
-                .request(server)
-                .post("/exercises")
-                .send({ name: "test", tags: ["test"] })).body
             const response = await chai
                 .request(server)
-                .patch(`/exercises/${exerciseId}`)
+                .patch(`/exercises/1`)
                 .send(exercise)
 
             expect(response.status).to.equal(422)
@@ -226,7 +200,10 @@ describe("exercise", () => {
     })
 
     describe("DELETE /exercises/:id", () => {
-        it("should return 404 when exercise does not exist", async () => {})
+        it("should return 404 when exercise does not exist", async () => {
+            const response = await chai.request(server).delete(`/exercise/1`)
+            expect(response.status).to.equal(404)
+        })
 
         it("should delete an exercise", () => {})
     })

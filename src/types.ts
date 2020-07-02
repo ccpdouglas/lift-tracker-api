@@ -1,8 +1,11 @@
 import { Document } from "mongoose"
 
-export interface IExerciseValues {
+export interface ICreateExerciseValues {
     name: string
     tags: string[]
+}
+
+export interface IExerciseValues extends ICreateExerciseValues {
     sets: string[]
 }
 

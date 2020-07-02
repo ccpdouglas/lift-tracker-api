@@ -1,5 +1,5 @@
 import { Model } from "mongoose"
-import { IExerciseController, IExercise, IExerciseValues } from "../../types"
+import { IExerciseController, IExercise, IExerciseValues, ICreateExerciseValues } from "../../types"
 
 export default class ExerciseController implements IExerciseController {
     constructor(private _ExerciseModel: Model<IExercise, {}>) {}
@@ -9,7 +9,7 @@ export default class ExerciseController implements IExerciseController {
         return documents
     }
 
-    public async create(exercise: IExerciseValues): Promise<IExercise> {
+    public async create(exercise: ICreateExerciseValues): Promise<IExercise> {
         const newExercise = new this._ExerciseModel(exercise)
         const document = await newExercise.save()
         return document
