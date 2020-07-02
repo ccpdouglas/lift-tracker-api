@@ -1,8 +1,11 @@
 import chai from "chai"
 import chaiHttp from "chai-http"
 import server from "../app"
-import { connect, clearDatabase, closeDatabase, createExercise } from "./mockgoose"
+import { connect, clearDatabase, closeDatabase } from "./mockgoose"
+import ExerciseController from "../api/controllers/ExerciseController"
+import Exercise from "../models/Exercise"
 
+const exerciseController = new ExerciseController(Exercise)
 const expect = chai.expect
 
 chai.use(chaiHttp)
@@ -20,8 +23,8 @@ describe("exercise", () => {
             const exerciseBody2 = { name: "test exercise two", tags: ["test"] }
             const expectedResponse = [{ ...exerciseBody, sets: [] }, { ...exerciseBody2, sets: [] }]
 
-            await createExercise(exerciseBody)
-            await createExercise(exerciseBody2)
+            await exerciseController.create(exerciseBody)
+            await exerciseController.create(exerciseBody2)
 
             const response = await chai.request(server).get("/exercises")
 
@@ -117,7 +120,7 @@ describe("exercise", () => {
         it("should get one exercise", async () => {
             const exerciseBody = { name: "exercise", tags: ["test"] }
             const expected = { name: "exercise", tags: ["test"], sets: [] }
-            const exercise = await createExercise(exerciseBody)
+            const exercise = await exerciseController.create(exerciseBody)
             const response = await chai.request(server).get(`/exercises/${exercise._id}`)
             const { name, tags, sets, _id } = response.body
 
@@ -194,7 +197,20 @@ describe("exercise", () => {
             expect(response.status).to.equal(404)
         })
 
-        it("should update an exercise", () => {})
+        it("should update an exercise and return the updated exercise", async () => {
+            const updateBody = { name: "testing", tags: ["tag"], sets: [] }
+            const exercise = await exerciseController.create({ name: "test", tags: [] })
+            const response = await chai
+                .request(server)
+                .patch(`/exercise/${exercise._id}`)
+                .send(updateBody)
+
+            const { name, tags, sets, _id } = response.body
+
+            expect(response.status).to.equal(200)
+            expect({ name, tags, sets }).to.deep.equal(updateBody)
+            expect(_id).to.be.a("string")
+        })
 
         it("should return the created exercise", () => {})
     })
@@ -205,6 +221,10 @@ describe("exercise", () => {
             expect(response.status).to.equal(404)
         })
 
-        it("should delete an exercise", () => {})
+        it("should delete an exercise", async () => {
+            const exercise = await exerciseController.create({ name: "test", tags: [] })
+            const response = await chai.request(server).delete(`/exercise/${exercise._id}`)
+            expect(response.status).to.equal(200)
+        })
     })
 })

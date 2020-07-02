@@ -1,8 +1,5 @@
 import mongoose from "mongoose"
 import { MongoMemoryServer } from "mongodb-memory-server"
-import ExerciseController from "../api/controllers/ExerciseController"
-import Exercise from "../models/Exercise"
-import { ICreateExerciseValues, IExercise } from "../types"
 
 const mongod = new MongoMemoryServer()
 
@@ -33,10 +30,4 @@ export const clearDatabase = async function(): Promise<void> {
         const collection = collections[key]
         await collection.deleteMany({})
     }
-}
-
-const exerciseController = new ExerciseController(Exercise)
-
-export const createExercise = async function(exercise: ICreateExerciseValues): Promise<IExercise> {
-    return exerciseController.create(exercise)
 }
