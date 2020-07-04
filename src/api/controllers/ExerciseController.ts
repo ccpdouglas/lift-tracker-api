@@ -50,6 +50,6 @@ export default class ExerciseController implements IExerciseController {
         document.sets = sets
         document.tags = tags
         await document.save()
-        return document
+        return document.toJSON()
     }
 }
