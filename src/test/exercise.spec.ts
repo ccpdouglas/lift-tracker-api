@@ -4,6 +4,7 @@ import server from "../app"
 import { connect, clearDatabase, closeDatabase } from "./mockgoose"
 import ExerciseController from "../api/controllers/ExerciseController"
 import Exercise from "../models/Exercise"
+import { Types } from "mongoose"
 
 const exerciseController = new ExerciseController(Exercise)
 const expect = chai.expect
@@ -130,7 +131,7 @@ describe("exercise", () => {
         })
 
         it("should return 404 when exercise does not exist", async () => {
-            const response = await chai.request(server).get(`/exercises/1`)
+            const response = await chai.request(server).get(`/exercises/${Types.ObjectId()}`)
             expect(response.status).to.equal(404)
         })
     })
@@ -141,7 +142,7 @@ describe("exercise", () => {
             const expectedError = { errors: [{ location: "body", msg: "provide a value for name", param: "name" }] }
             const response = await chai
                 .request(server)
-                .patch(`/exercises/1`)
+                .patch(`/exercises/${Types.ObjectId()}`)
                 .send(exercise)
             expect(response.status).to.equal(422)
             expect(response.body).to.deep.equal(expectedError)
@@ -154,7 +155,7 @@ describe("exercise", () => {
             }
             const response = await chai
                 .request(server)
-                .patch(`/exercises/1`)
+                .patch(`/exercises/${Types.ObjectId()}`)
                 .send(exercise)
 
             expect(response.status).to.equal(422)
@@ -166,7 +167,7 @@ describe("exercise", () => {
             const expectedError = { errors: [{ location: "body", msg: "provide a value for tags", param: "tags" }] }
             const response = await chai
                 .request(server)
-                .patch(`/exercises/1`)
+                .patch(`/exercises/${Types.ObjectId()}`)
                 .send(exercise)
 
             expect(response.status).to.equal(422)
@@ -182,7 +183,7 @@ describe("exercise", () => {
             }
             const response = await chai
                 .request(server)
-                .patch(`/exercises/1`)
+                .patch(`/exercises/${Types.ObjectId()}`)
                 .send(exercise)
 
             expect(response.status).to.equal(422)
@@ -192,7 +193,7 @@ describe("exercise", () => {
         it("should return 404 when exercise does not exist", async () => {
             const response = await chai
                 .request(server)
-                .patch(`/exercise/1`)
+                .patch(`/exercises/${Types.ObjectId()}`)
                 .send({ name: "test", tags: ["test"] })
             expect(response.status).to.equal(404)
         })
@@ -200,9 +201,12 @@ describe("exercise", () => {
         it("should update an exercise and return the updated exercise", async () => {
             const updateBody = { name: "testing", tags: ["tag"], sets: [] }
             const exercise = await exerciseController.create({ name: "test", tags: [] })
+
+            console.log(`exercises/${exercise._id}`)
+
             const response = await chai
                 .request(server)
-                .patch(`/exercise/${exercise._id}`)
+                .patch(`/exercises/${exercise._id}`)
                 .send(updateBody)
 
             const { name, tags, sets, _id } = response.body
@@ -211,19 +215,17 @@ describe("exercise", () => {
             expect({ name, tags, sets }).to.deep.equal(updateBody)
             expect(_id).to.be.a("string")
         })
-
-        it("should return the created exercise", () => {})
     })
 
     describe("DELETE /exercises/:id", () => {
         it("should return 404 when exercise does not exist", async () => {
-            const response = await chai.request(server).delete(`/exercise/1`)
+            const response = await chai.request(server).delete(`/exercises/${Types.ObjectId()}`)
             expect(response.status).to.equal(404)
         })
 
         it("should delete an exercise", async () => {
             const exercise = await exerciseController.create({ name: "test", tags: [] })
-            const response = await chai.request(server).delete(`/exercise/${exercise._id}`)
+            const response = await chai.request(server).delete(`/exercises/${exercise._id}`)
             expect(response.status).to.equal(200)
         })
     })
