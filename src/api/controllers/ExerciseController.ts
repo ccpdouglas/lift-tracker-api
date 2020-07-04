@@ -1,4 +1,4 @@
-import { Model } from "mongoose"
+import { Model, Types } from "mongoose"
 import { IExerciseController, IExercise, IExerciseValues, ICreateExerciseValues } from "../../types"
 
 export default class ExerciseController implements IExerciseController {
@@ -16,16 +16,36 @@ export default class ExerciseController implements IExerciseController {
     }
 
     public async delete(id: string): Promise<void> {
-        await this._ExerciseModel.findByIdAndDelete(id).exec()
+        const document = await this._ExerciseModel.findByIdAndDelete(Types.ObjectId(id)).exec()
+
+        if (document === null) {
+            const error = new Error("document not found")
+            error.name = "404"
+            throw error
+        }
     }
 
     public async get(id: string): Promise<IExercise> {
-        const document = await this._ExerciseModel.findById(id).exec()
+        const document = await this._ExerciseModel.findById(Types.ObjectId(id)).exec()
+
+        if (document === null) {
+            const error = new Error("document not found")
+            error.name = "404"
+            throw error
+        }
+
         return document.toJSON()
     }
 
     public async update(id: string, { name, sets, tags }: IExerciseValues): Promise<IExercise> {
-        const document = await this._ExerciseModel.findById(id, { name }).exec()
+        const document = await this._ExerciseModel.findById(Types.ObjectId(id), { name }).exec()
+
+        if (document === null) {
+            const error = new Error("document not found")
+            error.name = "404"
+            throw error
+        }
+
         document.name = name
         document.sets = sets
         document.tags = tags

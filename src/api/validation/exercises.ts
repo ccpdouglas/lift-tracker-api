@@ -1,4 +1,15 @@
-import { body, ValidationChain } from "express-validator"
+import { body, ValidationChain, param } from "express-validator"
+import { Types } from "mongoose"
+
+export const exerciseURLRules = (): ValidationChain[] => {
+    return [
+        param("id").custom((input: string): boolean => {
+            const isValid = Types.ObjectId.isValid(input)
+            if (!isValid) throw new Error("provide a valid ObjectId in query")
+            return true
+        })
+    ]
+}
 
 export const exerciseRules = (): ValidationChain[] => {
     return [
@@ -17,7 +28,7 @@ export const exerciseRules = (): ValidationChain[] => {
             .bail()
             .custom((input: []): boolean => {
                 const hasNonStrings = input.filter(elem => typeof elem !== "string").length > 0
-                if (hasNonStrings) throw Error("provide an array of strings for tags")
+                if (hasNonStrings) throw new Error("provide an array of strings for tags")
                 return true
             })
     ]
