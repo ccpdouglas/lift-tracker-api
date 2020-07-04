@@ -42,7 +42,7 @@ exerciseRouter.patch("/:id", exerciseURLRules(), exerciseRules(), validate, asyn
 exerciseRouter.delete("/:id", exerciseURLRules(), validate, async (req: Request, res: Response) => {
     try {
         await exerciseController.delete(req.params.id)
-        return res.status(200)
+        return res.status(200).send()
     } catch (error) {
         if (error.name === "404") return res.status(404).json({ errors: [{ error: "document not found" }] })
         return res.status(500).json({ errors: [{ error: "internal server error" }] })
