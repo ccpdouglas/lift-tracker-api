@@ -118,6 +118,19 @@ describe("exercise", () => {
     })
 
     describe("GET /exercises/:id", () => {
+        it("should return 422 with correct error message when id is not a valid ObjectId", async () => {
+            const response = await chai.request(server).get(`/exercises/1`)
+            expect(response.status).to.equal(422)
+            expect(response.body).to.deep.equal({
+                errors: [{ value: "1", msg: "provide a valid ObjectId in query", param: "id", location: "params" }]
+            })
+        })
+
+        it("should return 404 when exercise does not exist", async () => {
+            const response = await chai.request(server).get(`/exercises/${Types.ObjectId()}`)
+            expect(response.status).to.equal(404)
+        })
+
         it("should get one exercise", async () => {
             const exerciseBody = { name: "exercise", tags: ["test"] }
             const expected = { name: "exercise", tags: ["test"], sets: [] }
@@ -129,14 +142,20 @@ describe("exercise", () => {
             expect({ name, tags, sets }).to.deep.equal(expected)
             expect(_id).to.be.a("string")
         })
-
-        it("should return 404 when exercise does not exist", async () => {
-            const response = await chai.request(server).get(`/exercises/${Types.ObjectId()}`)
-            expect(response.status).to.equal(404)
-        })
     })
 
     describe("PATCH /exercises/:id", () => {
+        it("should return 422 with correct error message when id is not a valid ObjectId", async () => {
+            const response = await chai
+                .request(server)
+                .patch(`/exercises/1`)
+                .send({ name: "test", tags: ["test"] })
+            expect(response.status).to.equal(422)
+            expect(response.body).to.deep.equal({
+                errors: [{ value: "1", msg: "provide a valid ObjectId in query", param: "id", location: "params" }]
+            })
+        })
+
         it("should return 422 when name is missing", async () => {
             const exercise = { tags: ["test", "test two"] }
             const expectedError = { errors: [{ location: "body", msg: "provide a value for name", param: "name" }] }
@@ -202,8 +221,6 @@ describe("exercise", () => {
             const updateBody = { name: "testing", tags: ["tag"], sets: [] }
             const exercise = await exerciseController.create({ name: "test", tags: [] })
 
-            console.log(`exercises/${exercise._id}`)
-
             const response = await chai
                 .request(server)
                 .patch(`/exercises/${exercise._id}`)
@@ -218,6 +235,14 @@ describe("exercise", () => {
     })
 
     describe("DELETE /exercises/:id", () => {
+        it("should return 422 with correct error message when id is not a valid ObjectId", async () => {
+            const response = await chai.request(server).delete(`/exercises/1`)
+            expect(response.status).to.equal(422)
+            expect(response.body).to.deep.equal({
+                errors: [{ value: "1", msg: "provide a valid ObjectId in query", param: "id", location: "params" }]
+            })
+        })
+
         it("should return 404 when exercise does not exist", async () => {
             const response = await chai.request(server).delete(`/exercises/${Types.ObjectId()}`)
             expect(response.status).to.equal(404)
